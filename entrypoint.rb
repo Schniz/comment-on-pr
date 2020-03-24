@@ -42,7 +42,7 @@ message = unique_id_comment + "\n" + File.read(file_path)
 coms = github.issue_comments(repo, pr_number)
 puts coms
 duplicate = coms.find { |c|
-  c["user"]["login"] != "github-actions[bot]" &&
+  c["user"]["login"] == "github-actions[bot]" &&
     !unique_id.nil? &&
     c["body"].include?(unique_id_comment)
 }
