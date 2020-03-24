@@ -31,8 +31,13 @@ else
   end
   pr_number = pr_found["number"]
 end
-message = File.read(file_path)
-unique_id_comment = unique_id && %(<!-- comment_id: #{unique_id} -->)
+unique_id_comment = if unique_id.nil?
+  ""
+else
+  %(<!-- comment_id: #{unique_id} -->)
+end
+
+message = unique_id_comment + File.read(file_path)
 
 coms = github.issue_comments(repo, pr_number)
 duplicate = coms.find { |c|
@@ -46,4 +51,3 @@ if duplicate
 else
   github.add_comment(repo, pr_number, message)
 end
-
