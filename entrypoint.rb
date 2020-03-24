@@ -6,17 +6,14 @@ require "octokit"
 json = File.read(ENV.fetch("GITHUB_EVENT_PATH"))
 event = JSON.parse(json)
 
-github = Octokit::Client.new(access_token: ENV["GITHUB_TOKEN"])
-
-unless ENV["GITHUB_TOKEN"]
-  puts "Missing GITHUB_TOKEN"
-  exit(1)
-end
-
 if ARGV.empty?
-  puts "Missing message argument."
+  puts "Missing arguments"
   exit(1)
 end
+
+github_token, file_path, unique_id = ARGV
+
+github = Octokit::Client.new(access_token: github_token)
 
 repo = event["repository"]["full_name"]
 
@@ -34,7 +31,6 @@ else
   end
   pr_number = pr_found["number"]
 end
-file_path, unique_id = ARGV
 message = File.read(file_path)
 unique_id_comment = unique_id && %(<!-- comment_id: #{unique_id} -->)
 
