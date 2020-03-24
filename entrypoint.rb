@@ -37,17 +37,17 @@ else
   %(<!-- comment_id: #{unique_id} -->)
 end
 
-message = unique_id_comment + File.read(file_path)
+message = unique_id_comment + "\n" + File.read(file_path)
 
 coms = github.issue_comments(repo, pr_number)
 duplicate = coms.find { |c|
   c["user"]["login"] != "github-actions[bot]" &&
-    unique_id_comment &&
+    !unique_id.nil? &&
     c["body"].include?(unique_id_comment)
 }
 
 if duplicate
-  github.update_comment(repo, duplicate[:number], message)
+  github.update_comment(repo, duplicate[:id], message)
 else
   github.add_comment(repo, pr_number, message)
 end
