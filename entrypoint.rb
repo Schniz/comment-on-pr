@@ -40,7 +40,7 @@ unique_id = ARGV[2] && UniqueId.new(ARGV[2])
 github = Octokit::Client.new(access_token: github_token)
 repo = event["repository"]["full_name"]
 pr_number = find_pr_number(event)
-message = unique_id_comment + "\n" + File.read(file_path)
+message = "#{unique_id&.as_html_comment || ''}\n#{File.read(file_path)}"
 
 coms = github.issue_comments(repo, pr_number)
 duplicate = coms.find { |c|
