@@ -9,5 +9,5 @@ LABEL "com.github.actions.color"="blue"
 
 RUN gem install octokit
 
-ADD entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ADD entrypoint.rb /entrypoint.rb
+ENTRYPOINT ["/entrypoint.rb"]

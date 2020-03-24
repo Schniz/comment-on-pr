@@ -1,0 +1,23 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  send_a_comment:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      # To use this repository's private action, you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Send a comment
+        uses: ./ # Uses an action in the root directory
+        with:
+          file_path: ./.github/comment.md
+          unique_id: my-unique-id
+      - name: Override the comment
+        uses: ./ # Uses an action in the root directory
+        with:
+          file_path: ./.github/second_comment.md
+          unique_id: my-unique-id

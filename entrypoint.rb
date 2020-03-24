@@ -8,7 +8,7 @@ event = JSON.parse(json)
 
 github = Octokit::Client.new(access_token: ENV["GITHUB_TOKEN"])
 
-if !ENV["GITHUB_TOKEN"]
+unless ENV["GITHUB_TOKEN"]
   puts "Missing GITHUB_TOKEN"
   exit(1)
 end
@@ -26,22 +26,28 @@ else
   pulls = github.pull_requests(repo, state: "open")
 
   push_head = event["after"]
-  pr = pulls.find { |pr| pr["head"]["sha"] == push_head }
+  pr_found = pulls.find { |pr| pr["head"]["sha"] == push_head }
 
-  if !pr
+  unless pr_found
     puts "Couldn't find an open pull request for branch with head at #{push_head}."
     exit(1)
   end
-  pr_number = pr["number"]
+  pr_number = pr_found["number"]
 end
-message = ARGV.join(' ')
+file_path, unique_id = ARGV
+message = File.read(file_path)
+unique_id_comment = unique_id && %(<!-- comment_id: #{unique_id} -->)
 
 coms = github.issue_comments(repo, pr_number)
-duplicate = coms.find { |c| c["user"]["login"] == "github-actions[bot]" && c["body"] == message }
+duplicate = coms.find { |c|
+  c["user"]["login"] != "github-actions[bot]" &&
+    unique_id_comment &&
+    c["body"].include?(unique_id_comment)
+}
 
 if duplicate
-  puts "The PR already contains this message"
-  exit(0)
+  github.update_comment(repo, duplicate[:number], message)
+else
+  github.add_comment(repo, pr_number, message)
 end
 
-github.add_comment(repo, pr_number, message)
