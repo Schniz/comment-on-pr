@@ -5,11 +5,19 @@ branding:
   icon: 'message-square'  
   color: 'blue'
 inputs:
-  msg: 
-    description: Comment's message
+  token:
+    description: "A github token. Comes from `{{ secrets.GITHUB_TOKEN }}`"
+    required: true
+  unique_id:
+    description: A unique ID to override comments
+    required: true
+  file_path:
+    description: A file to read
     required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.msg }}
+    - ${{ inputs.token }}
+    - ${{ inputs.file_path }}
+    - ${{ inputs.unique_id }}
