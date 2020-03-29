@@ -1,6 +1,6 @@
 on:
-  push:
-    branches: [ master ]
+  # push: # Can't work, master is not a PR :)
+  #   branches: [ master ]
   pull_request:
 
 jobs:
