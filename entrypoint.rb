@@ -13,7 +13,7 @@ UniqueId = Struct.new(:id) {
   end
 }
 
-def find_pr_number(event)
+def find_pr_number(github, event)
   if ENV.fetch("GITHUB_EVENT_NAME") == "pull_request"
     return event["number"]
   else
@@ -39,7 +39,7 @@ unique_id = ARGV[2] && UniqueId.new(ARGV[2])
 
 github = Octokit::Client.new(access_token: github_token)
 repo = event["repository"]["full_name"]
-pr_number = find_pr_number(event)
+pr_number = find_pr_number(github, event)
 message = "#{unique_id&.as_html_comment || ''}\n#{File.read(file_path)}"
 
 coms = github.issue_comments(repo, pr_number)
